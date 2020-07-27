@@ -9,7 +9,10 @@ Public Class Form1
     Dim G As Graphics
     Dim BBG As Graphics
     Dim BB As Bitmap
-    Dim r As Rectangle
+    Dim bmpTile As Bitmap
+    Dim sRect As Rectangle
+    Dim dRect As Rectangle
+
 
     'FPS Counter
     Dim tSec As Integer = TimeOfDay.Second
@@ -71,7 +74,11 @@ Public Class Form1
         G = Me.CreateGraphics
         ' BB = New Bitmap(Me.Width, Me.Height)
         BB = New Bitmap(ResWidth, Resheight)
+        bmpTile = New Bitmap(GFX.pbGFX.Image)
 
+        'set up map
+        map(21, 21, 0) = 1
+        map(22, 21, 0) = 1
         StartGameLoop()
 
     End Sub
@@ -99,17 +106,10 @@ Public Class Form1
         ' DRAW TILES
         For X = 0 To 19 ' 20 tiles across
             For Y = 0 To 14 '15 down (32 px each)
-                r = New Rectangle(X * TileSize, Y * TileSize, TileSize, TileSize)
-                Select Case map(Mapx + X, MapY + Y, 0)
-                    Case 0 'Normal
-                        G.FillRectangle(Brushes.BurlyWood, r)
-                    Case 1 'Red
-                        G.FillRectangle(Brushes.Red, r)
-                    Case 2 'Blue
-                        G.FillRectangle(Brushes.Blue, r)
-                End Select
-
-                G.DrawRectangle(Pens.Black, r)
+                'new sub to go here
+                getsourcerect(Mapx + X, MapY + Y, TileSize, TileSize)
+                dRect = New Rectangle(X * TileSize, Y * TileSize, TileSize, TileSize)
+                G.DrawImage(bmpTile, dRect, sRect, GraphicsUnit.Pixel)
             Next
         Next
 
@@ -171,6 +171,16 @@ Public Class Form1
                 map(mMapX, mMapY, 0) = 2
 
 
+        End Select
+    End Sub
+    Private Sub getsourcerect(ByVal x As Integer, ByVal y As Integer, byvalw As Integer, ByVal h As Integer)
+        Select Case map(x, y, 0)
+            Case 0 'grass
+                sRect = New Rectangle(0, 0, TileSize, TileSize)
+            Case 1 'tree
+                sRect = New Rectangle(32, 32, TileSize, TileSize)
+            Case 2 'mountain
+                sRect = New Rectangle(64, 32, TileSize, TileSize)
         End Select
     End Sub
 End Class
